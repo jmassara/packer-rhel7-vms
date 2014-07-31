@@ -1,0 +1,60 @@
+{
+	"variables": {
+		"vm_name": "rhel-7.0-vbox",
+		"iso_url": "{{env `ISO_LOCATION`}}/rhel-server-7.0-x86_64-dvd.iso",
+		"iso_sha256": "85a9fedc2bf0fc825cc7817056aa00b3ea87d7e111e0cf8de77d3ba643f8646c",
+		"guest_url": "{{env `ISO_LOCATION`}}",
+		"guest_sha256": "2a87971ae3c7e57e87713967a6f242acbdafcc09b635cba98e6dd3a7f5292d3b"
+	},
+
+	"builders": [{
+		"type": "virtualbox-iso",
+		"guest_os_type": "RedHat_64",
+		"vm_name": "{{user `vm_name`}}",
+		"disk_size": "8192",
+		"vboxmanage": [
+			["modifyvm", "{{.Name}}", "--memory", "1024"],
+			["modifyvm", "{{.Name}}", "--cpus", "2"],
+			["modifyvm", "{{.Name}}", "--ioapic", "on"],
+			["modifyvm", "{{.Name}}", "--pae", "on"],
+			["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
+			["modifyvm", "{{.Name}}", "--bioslogodisplaytime", "1"]
+		],
+		"iso_checksum_type": "sha256",
+		"iso_url": "{{user `iso_url`}}",
+		"iso_checksum": "{{user `iso_sha256`}}",
+		"guest_additions_url": "{{user `guest_url`}}/VBoxGuestAdditions_{{.Version}}.iso",
+		"guest_additions_sha256": "{{user `guest_sha256`}}",
+		"guest_additions_path": "/tmp/VBoxGuestAdditions_{{.Version}}.iso",
+		"virtualbox_version_file": ".virtualbox-version",
+		"http_directory": "http",
+		"ssh_wait_timeout": "20m",
+		"ssh_username": "vagrant",
+		"ssh_password": "vagrant",
+		"shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+		"boot_wait": "5s",
+		"boot_command": [
+			"<esc><wait>",
+			"vmlinuz initrd=initrd.img net.ifnames=0 biosdevname=0 ",
+			"ks=http://{{.HTTPIP}}:{{.HTTPPort}}/vbox-ks.cfg",
+			"<enter>"
+		]
+	}],
+
+	"provisioners": [{
+		"type": "shell",
+		"execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+		"scripts": [
+			"scripts/vagrant.sh",
+			"scripts/sshd.sh",
+			"scripts/virtualbox.sh",
+			"scripts/cleanup.sh"
+		]
+	}],
+
+	"post-processors": [{
+		"type": "vagrant",
+		"output": "{{user `vm_name`}}.box",
+		"keep_input_artifact": false
+	}]
+}
