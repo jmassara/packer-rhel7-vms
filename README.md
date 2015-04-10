@@ -18,7 +18,7 @@ Once you've obtained the ISOs, copy all of them into the same directory
 
 ## Creating the boxes
 
-* Export `ISO_LOCATION` to the directory where the ISOs reside
+* Export `ISO_URL` to the location of the installation ISO
 * Run packer with either the `rhel-7.0-vbox.json` or `rhel-7.0-vmware.json` template
 * Add the box to Vagrant
 * Build VMs
@@ -26,7 +26,7 @@ Once you've obtained the ISOs, copy all of them into the same directory
 ### Example
 
 ```
-$ export ISO_LOCATION=file:///usr/local/isos
+$ export ISO_URL=file:///usr/local/isos/rhel-server-7.0-x86_64-dvd.iso
 $ packer build rhel-7.0-vbox.json
 $ packer build rhel-7.0-vmware.json
 $ vagrant box add rhel-7.0-vbox ./rhel-7.0-vbox.box

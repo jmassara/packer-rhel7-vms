@@ -1,7 +1,7 @@
 {
 	"variables": {
 		"vm_name": "rhel-7.0-vmware",
-		"iso_url": "{{env `ISO_LOCATION`}}/rhel-server-7.0-x86_64-dvd.iso",
+		"iso_url": "{{env `ISO_URL`}}",
 		"iso_sha256": "85a9fedc2bf0fc825cc7817056aa00b3ea87d7e111e0cf8de77d3ba643f8646c"
 	},
 
