@@ -50,6 +50,7 @@
 
 	"post-processors": [{
 		"type": "vagrant",
-		"output": "{{user `vm_name`}}.box"
+		"output": "{{user `vm_name`}}.box",
+		"keep_input_artifact": false
 	}]
 }
