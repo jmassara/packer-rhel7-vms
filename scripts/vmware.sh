@@ -11,7 +11,7 @@ tar zxf $VMWARE_MNTDIR/VMwareTools*.tar.gz -C $VMWARE_TMPDIR
 umount $VMWARE_MNTDIR
 
 # Install tools
-$VMWARE_TMPDIR/vmware-tools-distrib/vmware-install.pl -d
+$VMWARE_TMPDIR/vmware-tools-distrib/vmware-install.pl -f -d
 
 # Clean up
 rm -f $VMWARE_ISO
