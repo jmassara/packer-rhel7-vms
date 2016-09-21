@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -x
 
-VBOX_VERSION=$(cat .virtualbox-version)
-VBOX_ISO=/tmp/VBoxGuestAdditions_$VBOX_VERSION.iso
+VBOX_ISO=/home/vagrant/VBoxGuestAdditions.iso
 VBOX_MNTDIR=$(mktemp --tmpdir=/tmp -q -d -t vbox_mnt_XXXXXX)
 
 # Install tools

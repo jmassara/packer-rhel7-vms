@@ -1,0 +1,54 @@
+{
+	"variables": {
+		"vm_name": "rhel-7.2-vbox",
+		"iso_url": "{{env `ISO_URL`}}",
+		"iso_sha256": "03f3a0291634335f6995534d829bd21ffaa0d000004dfeb1b2fb81052d64a4d5"
+	},
+
+	"builders": [{
+		"type": "virtualbox-iso",
+		"guest_os_type": "RedHat_64",
+		"vm_name": "{{user `vm_name`}}",
+		"disk_size": "8192",
+		"vboxmanage": [
+			["modifyvm", "{{.Name}}", "--memory", "1024"],
+			["modifyvm", "{{.Name}}", "--cpus", "2"],
+			["modifyvm", "{{.Name}}", "--ioapic", "on"],
+			["modifyvm", "{{.Name}}", "--pae", "on"],
+			["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
+			["modifyvm", "{{.Name}}", "--bioslogodisplaytime", "1"]
+		],
+		"iso_checksum_type": "sha256",
+		"iso_url": "{{user `iso_url`}}",
+		"iso_checksum": "{{user `iso_sha256`}}",
+		"http_directory": "http",
+		"ssh_wait_timeout": "20m",
+		"ssh_username": "vagrant",
+		"ssh_password": "vagrant",
+		"shutdown_command": "echo 'vagrant'|sudo -S /sbin/halt -h -p",
+		"boot_wait": "5s",
+		"boot_command": [
+			"<esc><wait>",
+			"vmlinuz initrd=initrd.img net.ifnames=0 biosdevname=0 ",
+			"ks=http://{{.HTTPIP}}:{{.HTTPPort}}/vbox-ks.cfg",
+			"<enter>"
+		]
+	}],
+
+	"provisioners": [{
+		"type": "shell",
+		"execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+		"scripts": [
+			"scripts/vagrant.sh",
+			"scripts/sshd.sh",
+			"scripts/virtualbox.sh",
+			"scripts/cleanup.sh"
+		]
+	}],
+
+	"post-processors": [{
+		"type": "vagrant",
+		"output": "{{user `vm_name`}}.box",
+		"keep_input_artifact": true
+	}]
+}
