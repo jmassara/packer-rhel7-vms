@@ -1,0 +1,57 @@
+{
+  "variables": {
+    "vm_name": "rhel-7.3-vmware",
+    "iso_url": "{{env `ISO_URL`}}",
+    "iso_sha256": "120acbca7b3d55465eb9f8ef53ad7365f2997d42d4f83d7cc285bf5c71e1131f"
+  },
+
+  "builders": [{
+    "headless": true,
+    "type": "vmware-iso",
+    "vm_name": "{{user `vm_name`}}",
+    "guest_os_type": "rhel7-64",
+    "vmdk_name": "rhel7",
+    "disk_size": "8192",
+    "vmx_data": {
+      "numvcpus": 2,
+      "cpuid.coresPerSocket": 1,
+      "memsize": 2048,
+      "ethernet0.virtualDev": "vmxnet3",
+      "virtualHW.version": "11"
+    },
+    "iso_checksum_type": "sha256",
+    "iso_url": "{{user `iso_url`}}",
+    "iso_checksum": "{{user `iso_sha256`}}",
+    "tools_upload_flavor": "linux",
+    "tools_upload_path": "/tmp/vmware_tools_{{.Flavor}}.iso",
+    "http_directory": "http",
+    "ssh_wait_timeout": "20m",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "shutdown_command": "echo 'vagrant' | sudo -S /sbin/halt -h -p",
+    "boot_wait": "5s",
+    "boot_command": [
+      "<esc><wait>",
+      "vmlinuz initrd=initrd.img inst.geoloc=0 rd.driver.blacklist=dm-multipath net.ifnames=0 biosdevname=0 ",
+      "ks=http://{{.HTTPIP}}:{{.HTTPPort}}/vmware-ks.cfg",
+      "<enter>"
+    ]
+  }],
+
+  "provisioners": [{
+    "type": "shell",
+    "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+    "scripts": [
+      "scripts/vagrant.sh",
+      "scripts/vmware.sh",
+      "scripts/sshd.sh",
+      "scripts/cleanup.sh"
+    ]
+  }],
+
+  "post-processors": [{
+    "type": "vagrant",
+    "output": "{{user `vm_name`}}.box",
+    "keep_input_artifact": false
+  }]
+}
