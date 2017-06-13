@@ -4,6 +4,7 @@
 *.iso
 *.tar
 *.swp
+ISOs/*
 crash.log
 output*
 .vagrant/
